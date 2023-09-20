@@ -12,5 +12,12 @@
   "sourceUrl": "",
   "donateUrl": "",
   "changelogUrl": "",
-  "modules": []
+  "modules": [
+    {
+      "slug": "vareo",
+      "name": "vareo",
+      "description": "Stereo varispeed audio loop/delay",
+      "tags": []
+    }
+  ]
 }

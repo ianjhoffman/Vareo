@@ -23,15 +23,15 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="mm"
-     inkscape:zoom="2.5861622"
-     inkscape:cx="37.120642"
-     inkscape:cy="348.00601"
-     inkscape:window-width="1312"
-     inkscape:window-height="429"
+     inkscape:zoom="1.1819358"
+     inkscape:cx="-36.80403"
+     inkscape:cy="289.77886"
+     inkscape:window-width="1440"
+     inkscape:window-height="764"
      inkscape:window-x="0"
      inkscape:window-y="25"
      inkscape:window-maximized="0"
-     inkscape:current-layer="layer1" />
+     inkscape:current-layer="layer2" />
   <defs
      id="defs1">
     <marker
@@ -922,7 +922,7 @@
      id="layer2"
      inkscape:label="components">
     <circle
-       style="fill:#00ff00;fill-opacity:1;stroke-width:0.308681"
+       style="fill:#00ff00;fill-opacity:1;stroke-width:0.308681;stroke:none"
        id="path3-8-0-3-0-3-3-0-4"
        cx="-6.8199987"
        cy="-111.75002"
@@ -930,7 +930,7 @@
        transform="scale(-1)"
        inkscape:label="R Audio Input" />
     <circle
-       style="fill:#00ff00;fill-opacity:1;stroke-width:0.308681"
+       style="fill:#00ff00;fill-opacity:1;stroke-width:0.308681;stroke:none"
        id="path3-8-0-3-0-3-3-0-4-3-2-5-2-9"
        cx="-6.8199987"
        cy="-101.75002"
@@ -938,7 +938,7 @@
        transform="scale(-1)"
        inkscape:label="L Audio Input" />
     <circle
-       style="fill:#00ff00;fill-opacity:1;stroke-width:0.308681"
+       style="fill:#00ff00;fill-opacity:1;stroke-width:0.308681;stroke:none"
        id="path3-8-0-3-0-3-3-0"
        cx="-15.820001"
        cy="-111.75002"
@@ -946,7 +946,7 @@
        transform="scale(-1)"
        inkscape:label="Delay Input" />
     <circle
-       style="fill:#00ff00;fill-opacity:1;stroke-width:0.308681"
+       style="fill:#00ff00;fill-opacity:1;stroke-width:0.308681;stroke:none"
        id="path3-8-0-3-0-3-3-0-4-3-2-5-2-9-9"
        cx="-15.820001"
        cy="-101.75002"
@@ -954,7 +954,7 @@
        transform="scale(-1)"
        inkscape:label="Speed Input" />
     <circle
-       style="fill:#00ff00;fill-opacity:1;stroke-width:0.308681"
+       style="fill:#00ff00;fill-opacity:1;stroke-width:0.308681;stroke:none"
        id="path3-8-0-3-0-3-3-0-4-3-2-5-2-9-9-1-3"
        cx="-24.82"
        cy="-111.75002"
@@ -962,7 +962,7 @@
        transform="scale(-1)"
        inkscape:label="Blend Input" />
     <circle
-       style="fill:#00ff00;fill-opacity:1;stroke-width:0.308681"
+       style="fill:#00ff00;fill-opacity:1;stroke-width:0.308681;stroke:none"
        id="path3-8-0-3-0-3-3-0-4-3-2"
        cx="-24.82"
        cy="-101.75002"
@@ -970,7 +970,7 @@
        transform="scale(-1)"
        inkscape:label="Rec Input" />
     <circle
-       style="fill:#00ff00;fill-opacity:1;stroke-width:0.308681"
+       style="fill:#00ff00;fill-opacity:1;stroke-width:0.308681;stroke:none"
        id="path3-8-0-3-0-3-3-0-4-3-2-5"
        cx="-24.82"
        cy="-91.75"
@@ -978,7 +978,7 @@
        transform="scale(-1)"
        inkscape:label="Jump Input" />
     <circle
-       style="fill:#0000ff;fill-opacity:1;stroke-width:0.308681"
+       style="fill:#0000ff;fill-opacity:1;stroke-width:0.308681;stroke:none"
        id="path3-8-0-3-0-3-3-0-4-3-2-5-2-9-9-1"
        cx="-33.82"
        cy="-111.75002"
@@ -986,7 +986,7 @@
        transform="scale(-1)"
        inkscape:label="R Audio Output" />
     <circle
-       style="fill:#0000ff;fill-opacity:1;stroke-width:0.308681"
+       style="fill:#0000ff;fill-opacity:1;stroke-width:0.308681;stroke:none"
        id="path3-8-0-3-0-3-3-0-4-3"
        cx="-33.82"
        cy="-101.75002"
@@ -994,7 +994,7 @@
        transform="scale(-1)"
        inkscape:label="L Audio Output" />
     <circle
-       style="fill:#0000ff;fill-opacity:1;stroke-width:0.308681"
+       style="fill:#0000ff;fill-opacity:1;stroke-width:0.308681;stroke:none"
        id="path3-8-0-3-0-3-3-0-4-3-2-5-2"
        cx="-33.82"
        cy="-91.75"
@@ -1002,84 +1002,84 @@
        transform="scale(-1)"
        inkscape:label="End Output" />
     <circle
-       style="fill:#ff0000;fill-opacity:1;stroke:#333333;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+       style="fill:#ff0000;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
        id="path11"
        cx="20.32"
        cy="28.163485"
        r="9.25"
        inkscape:label="Speed Knob" />
     <circle
-       style="fill:#ff0000;fill-opacity:1;stroke:#333333;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+       style="fill:#ff0000;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
        id="path12"
        cx="9.7650366"
        cy="47.896282"
        r="3.2"
        inkscape:label="Speed Attenuverter" />
     <circle
-       style="fill:#ff0000;fill-opacity:1;stroke:#333333;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+       style="fill:#ff0000;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
        id="path13"
        cx="29.173056"
        cy="51.837185"
        r="7.5"
        inkscape:label="Delay Knob" />
     <circle
-       style="fill:#ff0000;fill-opacity:1;stroke:#333333;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+       style="fill:#ff0000;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
        id="path13-7"
        cx="20.32"
        cy="74.116882"
        r="7.5"
        inkscape:label="Blend Knob" />
     <circle
-       style="fill:#ff0000;fill-opacity:1;stroke:#333333;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+       style="fill:#ff0000;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
        id="path14"
        cx="5.0000005"
        cy="14.941668"
        r="2.5"
        inkscape:label="REC Button" />
     <circle
-       style="fill:#ff0000;fill-opacity:1;stroke:#333333;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+       style="fill:#ff0000;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
        id="path14-7"
        cx="35.639999"
        cy="14.941668"
        r="2.5"
        inkscape:label="JUMP Button" />
     <circle
-       style="fill:#ff00ff;fill-opacity:1;stroke:#333333;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+       style="fill:#ff00ff;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
        id="path15"
        cx="11.000001"
        cy="14.941668"
        r="1"
        inkscape:label="REC LED" />
     <circle
-       style="fill:#ff00ff;fill-opacity:1;stroke:#333333;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+       style="fill:#ff00ff;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
        id="path15-8"
        cx="29.640001"
        cy="14.941668"
        r="1"
        inkscape:label="JUMP Tolerance LED" />
     <circle
-       style="fill:#ff00ff;fill-opacity:1;stroke:#333333;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+       style="fill:#ff00ff;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
        id="path15-8-2"
        cx="33.82"
        cy="84.331665"
        r="1"
        inkscape:label="END LED" />
     <circle
-       style="fill:#ff0000;fill-opacity:1;stroke:#333333;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+       style="fill:#ff0000;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
        id="path16"
        cx="5.9738522"
        cy="82.955078"
        r="2"
        inkscape:label="Jump Mode Switch" />
     <circle
-       style="fill:#ff0000;fill-opacity:1;stroke:#333333;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+       style="fill:#ff0000;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
        id="path16-6"
        cx="5.9738522"
        cy="62.965508"
        r="2"
        inkscape:label="Jump Dir Switch" />
     <circle
-       style="fill:#ff0000;fill-opacity:1;stroke:#333333;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+       style="fill:#ff0000;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
        id="path16-3"
        cx="34.894581"
        cy="73.403008"
