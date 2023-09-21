@@ -1,5 +1,5 @@
 #include "plugin.hpp"
-
+#include <dsp/digital.hpp>
 
 struct Vareo : Module {
 	enum ParamId {
@@ -60,35 +60,53 @@ struct Vareo : Module {
 		configOutput(END_OUTPUT_OUTPUT, "End Of Recording Output");
 		configBypass(L_AUDIO_INPUT_INPUT, L_AUDIO_OUTPUT_OUTPUT);
 		configBypass(R_AUDIO_INPUT_INPUT, R_AUDIO_OUTPUT_OUTPUT);
+
+		lightDivider.setDivision(32);
 	}
 
-	float phase = 0.f;
-	float blinkPhase = 0.f;
+	bool recording = false;
+	bool lastRecButton = false;
+	bool lastJumpButton = false;
+	bool pendingJumpLight = false;
+	dsp::SchmittTrigger recTrigger;
+	dsp::SchmittTrigger jumpTrigger;
+	dsp::ClockDivider lightDivider;
 
 	void process(const ProcessArgs& args) override {
-		// Compute the frequency from the pitch parameter and input
-		float pitch = params[SPEED_KNOB_PARAM].getValue();
-		float modAmt = params[SPEED_ATTENUVERTER_PARAM].getValue();
-		pitch += modAmt * inputs[SPEED_INPUT_INPUT].getVoltage();
-		// The default frequency is C4 = 261.6256f
-		float freq = dsp::FREQ_C4 * std::pow(2.f, pitch);
+		// Switches
+		bool jumpToRecordingStart = params[JUMP_MODE_SWITCH_PARAM].getValue() > 0;
+		bool jumpBack = params[JUMP_DIR_SWITCH_PARAM].getValue() > 0;
+		bool blendAvg = params[BLEND_MODE_SWITCH_PARAM].getValue() > 0;
 
-		// Accumulate the phase
-		phase += freq * args.sampleTime;
-		if (phase >= 1.f)
-			phase -= 1.f;
+		// Knobs
+		float speedParam = params[SPEED_KNOB_PARAM].getValue();
+		float speedAttenParam = params[SPEED_ATTENUVERTER_PARAM].getValue();
+		float delayParam = params[DELAY_KNOB_PARAM].getValue();
+		float blendParam = params[BLEND_KNOB_PARAM].getValue();
 
-		// Compute the sine output
-		float sine = std::sin(2.f * M_PI * phase);
-		// Audio signals are typically +/-5V
-		// https://vcvrack.com/manual/VoltageStandards
-		outputs[R_AUDIO_OUTPUT_OUTPUT].setVoltage(5.f * sine);
+		// Buttons
+		bool recButton = params[REC_BUTTON_PARAM].getValue() > 0.5f;
+		bool jumpButton = params[JUMP_BUTTON_PARAM].getValue() > 0.5f;
 
-		// Blink light at 1Hz
-		blinkPhase += args.sampleTime;
-		if (blinkPhase >= 1.f)
-			blinkPhase -= 1.f;
-		lights[END_LED_LIGHT].setBrightness(blinkPhase < 0.5f ? 1.f : 0.f);
+		// Toggle recording state based on button & gate
+		bool recTriggered = recTrigger.process(params[REC_INPUT_INPUT].getValue(), 0.1f, 1.f);
+		recording ^= (recButton && !lastRecButton) ^ recTriggered;
+
+		// Decide whether or not to jump based on button & gate
+		bool jumpTriggered = jumpTrigger.process(params[JUMP_INPUT_INPUT].getValue(), 0.1f, 1.f);
+		bool jumping = jumpTriggered || (jumpButton && !lastJumpButton);
+		pendingJumpLight |= jumping;
+
+		// Update previous values for record/jump buttons
+		lastRecButton = recButton;
+		lastJumpButton = jumpButton;
+
+		if (lightDivider.process()) {
+			float lightTime = args.sampleTime * lightDivider.getDivision();
+			lights[REC_LED_LIGHT].setBrightnessSmooth(recording ? 1.f : 0.f, lightTime);
+			lights[JUMP_TOLERANCE_LED_LIGHT].setBrightnessSmooth(pendingJumpLight ? 1.f : 0.f, lightTime);
+			pendingJumpLight = false;
+		}
 	}
 };
 
@@ -103,7 +121,7 @@ struct VareoWidget : ModuleWidget {
 		addChild(createWidget<ScrewSilver>(Vec(RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 		addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 
-		addParam(createParamCentered<VCVLatch>(mm2px(Vec(4.471, 16.529)), module, Vareo::REC_BUTTON_PARAM));
+		addParam(createParamCentered<VCVButton>(mm2px(Vec(4.471, 16.529)), module, Vareo::REC_BUTTON_PARAM));
 		addParam(createParamCentered<VCVButton>(mm2px(Vec(36.169, 16.529)), module, Vareo::JUMP_BUTTON_PARAM));
 		addParam(createParamCentered<RoundHugeBlackKnob>(mm2px(Vec(20.32, 26.576)), module, Vareo::SPEED_KNOB_PARAM));
 		addParam(createParamCentered<Trimpot>(mm2px(Vec(9.765, 46.328)), module, Vareo::SPEED_ATTENUVERTER_PARAM));
