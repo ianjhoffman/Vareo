@@ -41,12 +41,12 @@ struct Vareo : Module {
 		config(PARAMS_LEN, INPUTS_LEN, OUTPUTS_LEN, LIGHTS_LEN);
 		configButton(REC_BUTTON_PARAM, "Record Button");
 		configButton(JUMP_BUTTON_PARAM, "Jump Button");
-		configParam(SPEED_KNOB_PARAM, -1.f, 1.f, 0.f, "Speed");
+		configParam(SPEED_KNOB_PARAM, -5.f, 5.f, 0.f, "Speed");
 		configParam(SPEED_ATTENUVERTER_PARAM, -1.f, 1.f, 0.f, "Speed CV Attenuverter");
-		configParam(DELAY_KNOB_PARAM, 0.f, 1.f, 0.f, "Read Delay");
+		configParam(DELAY_KNOB_PARAM, 0.f, 5.f, 0.f, "Read Delay");
 		configSwitch(JUMP_DIR_SWITCH_PARAM, 0.f, 1.f, 0.f, "Jump Direction", {"Forward", "Backward"});
 		configSwitch(BLEND_MODE_SWITCH_PARAM, 0.f, 1.f, 0.f, "Blend Mode", {"Add", "Average"});
-		configParam(BLEND_KNOB_PARAM, 0.f, 1.f, 0.f, "Write Blend");
+		configParam(BLEND_KNOB_PARAM, -5.f, 5.f, 0.f, "Write Blend");
 		configSwitch(JUMP_MODE_SWITCH_PARAM, 0.f, 1.f, 0.f, "Jump Mode", {"Start of Recording", "Start of Tape"});
 		configInput(BLEND_INPUT_INPUT, "Write Blend CV Input");
 		configInput(DELAY_INPUT_INPUT, "Read Delay CV Input");
@@ -65,12 +65,12 @@ struct Vareo : Module {
 	}
 
 	bool recording = false;
-	bool lastRecButton = false;
-	bool lastJumpButton = false;
-	bool pendingJumpLight = false;
+	dsp::BooleanTrigger recButtonTrigger;
+	dsp::BooleanTrigger jumpButtonTrigger;
 	dsp::SchmittTrigger recTrigger;
 	dsp::SchmittTrigger jumpTrigger;
 	dsp::ClockDivider lightDivider;
+	float testClockPhase = 0.f;
 
 	void process(const ProcessArgs& args) override {
 		// Switches
@@ -78,34 +78,40 @@ struct Vareo : Module {
 		bool jumpBack = params[JUMP_DIR_SWITCH_PARAM].getValue() > 0;
 		bool blendAvg = params[BLEND_MODE_SWITCH_PARAM].getValue() > 0;
 
-		// Knobs
-		float speedParam = params[SPEED_KNOB_PARAM].getValue();
-		float speedAttenParam = params[SPEED_ATTENUVERTER_PARAM].getValue();
-		float delayParam = params[DELAY_KNOB_PARAM].getValue();
-		float blendParam = params[BLEND_KNOB_PARAM].getValue();
-
-		// Buttons
-		bool recButton = params[REC_BUTTON_PARAM].getValue() > 0.5f;
-		bool jumpButton = params[JUMP_BUTTON_PARAM].getValue() > 0.5f;
+		// Knobs w/ jack summing
+		float summedSpeed = params[SPEED_KNOB_PARAM].getValue();
+		summedSpeed += params[SPEED_ATTENUVERTER_PARAM].getValue() * inputs[SPEED_INPUT_INPUT].getVoltage();
+		float delay = params[DELAY_KNOB_PARAM].getValue() + inputs[DELAY_INPUT_INPUT].getVoltage();
+		float blend = params[BLEND_KNOB_PARAM].getValue() + inputs[BLEND_INPUT_INPUT].getVoltage();
 
 		// Toggle recording state based on button & gate
-		bool recTriggered = recTrigger.process(params[REC_INPUT_INPUT].getValue(), 0.1f, 1.f);
-		recording ^= (recButton && !lastRecButton) ^ recTriggered;
+		bool recJackTriggered = recTrigger.process(params[REC_INPUT_INPUT].getValue(), 0.1f, 1.f);
+		bool recButtonTriggered = recButtonTrigger.process(params[REC_BUTTON_PARAM].getValue() > 0.5f);
+		recording ^= recJackTriggered ^ recButtonTriggered;
 
 		// Decide whether or not to jump based on button & gate
-		bool jumpTriggered = jumpTrigger.process(params[JUMP_INPUT_INPUT].getValue(), 0.1f, 1.f);
-		bool jumping = jumpTriggered || (jumpButton && !lastJumpButton);
-		pendingJumpLight |= jumping;
+		bool jumpJackTriggered = jumpTrigger.process(params[JUMP_INPUT_INPUT].getValue(), 0.1f, 1.f);
+		bool jumpButtonTriggered = jumpButtonTrigger.process(params[JUMP_BUTTON_PARAM].getValue() > 0.5f);
+		bool jumping = jumpJackTriggered || jumpButtonTriggered;
 
-		// Update previous values for record/jump buttons
-		lastRecButton = recButton;
-		lastJumpButton = jumpButton;
+		// Scale abs(speed) exponentially, where -2.5V/2.5V is 1x speed
+		bool reverse = summedSpeed < 0.f;
+		float speed = dsp::exp2_taylor5(std::fabs(summedSpeed) - 2.5f);
+
+		// Test clock blink
+		testClockPhase += speed * args.sampleTime;
+		if (testClockPhase >= 1.f) {
+			testClockPhase -= 1.f;
+		}
 
 		if (lightDivider.process()) {
 			float lightTime = args.sampleTime * lightDivider.getDivision();
 			lights[REC_LED_LIGHT].setBrightnessSmooth(recording ? 1.f : 0.f, lightTime);
-			lights[JUMP_TOLERANCE_LED_LIGHT].setBrightnessSmooth(pendingJumpLight ? 1.f : 0.f, lightTime);
-			pendingJumpLight = false;
+			if (testClockPhase >= 0.5f) {
+				lights[JUMP_TOLERANCE_LED_LIGHT].setBrightness(1.f);
+			} else {
+				lights[JUMP_TOLERANCE_LED_LIGHT].setBrightnessSmooth(0.f, lightTime);
+			}
 		}
 	}
 };
