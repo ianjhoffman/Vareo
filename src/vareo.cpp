@@ -64,6 +64,7 @@ struct Vareo : Module {
 		lightDivider.setDivision(32);
 	}
 
+	// Input handling/state
 	bool recording = false;
 	dsp::BooleanTrigger recButtonTrigger;
 	dsp::BooleanTrigger jumpButtonTrigger;
@@ -72,6 +73,14 @@ struct Vareo : Module {
 	dsp::ClockDivider lightDivider;
 	float testClockPhase = 0.f;
 
+	// Audio handling/state
+	constexpr static size_t HISTORY_SIZE = 1 << 21;
+	dsp::DoubleRingBuffer<float, HISTORY_SIZE> lAudioBuffer;
+	dsp::DoubleRingBuffer<float, HISTORY_SIZE> rAudioBuffer;
+	dsp::DoubleRingBuffer<float, 16> lOutBuffer;
+	dsp::DoubleRingBuffer<float, 16> rOutBuffer;
+	float recIndex = 0.f;
+
 	void process(const ProcessArgs& args) override {
 		// Switches
 		bool jumpToRecordingStart = params[JUMP_MODE_SWITCH_PARAM].getValue() > 0;
@@ -79,8 +88,7 @@ struct Vareo : Module {
 		bool blendAvg = params[BLEND_MODE_SWITCH_PARAM].getValue() > 0;
 
 		// Knobs w/ jack summing
-		float summedSpeed = params[SPEED_KNOB_PARAM].getValue();
-		summedSpeed = clamp(summedSpeed + params[SPEED_ATTENUVERTER_PARAM].getValue() * inputs[SPEED_INPUT_INPUT].getVoltage(), -5.f, 5.f);
+		float speed = clamp(params[SPEED_KNOB_PARAM].getValue() + params[SPEED_ATTENUVERTER_PARAM].getValue() * inputs[SPEED_INPUT_INPUT].getVoltage(), -5.f, 5.f);
 		float delay = clamp(params[DELAY_KNOB_PARAM].getValue() + inputs[DELAY_INPUT_INPUT].getVoltage(), 0.f, 5.f);
 		float blend = clamp(params[BLEND_KNOB_PARAM].getValue() + inputs[BLEND_INPUT_INPUT].getVoltage(), -5.f, 5.f);
 
@@ -95,8 +103,21 @@ struct Vareo : Module {
 		bool jumping = jumpJackTriggered || jumpButtonTriggered;
 
 		// Scale abs(speed) exponentially, where -2.5V/2.5V is 1x speed
-		bool reverse = summedSpeed < 0.f;
-		float speed = dsp::exp2_taylor5(std::fabs(summedSpeed) - 2.5f);
+		bool reverse = speed < 0.f;
+		speed = dsp::exp2_taylor5(std::fabs(speed) - 2.5f);
+
+		// Scale delay from -5V to 5V (linear) to 0s to 2s (exponential)
+		float delaySeconds = /* if */ (delay >= 2.5f) ?
+			// Exponential from .5s to 2s from noon to 5:00 knob positions
+			dsp::exp2_taylor5(delay * (6.f / 5.f) - 4.f)
+		: /* else if */ ((delay >= 1.f) ?
+			// Exponential from .125s to .5s from 9:00 to noon knob positions
+			dsp::exp2_taylor5(delay * (4.f / 3.f) - (13.f / 3.f))
+		: /* else */
+			// Linear from 0s to .125s from 7:00 to 9:00 knob positions
+			delay * .125f
+		);
+		float delaySamples = delaySeconds * args.sampleRate;
 
 		// Test clock blink
 		testClockPhase += speed * args.sampleTime;
