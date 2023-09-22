@@ -80,9 +80,9 @@ struct Vareo : Module {
 
 		// Knobs w/ jack summing
 		float summedSpeed = params[SPEED_KNOB_PARAM].getValue();
-		summedSpeed += params[SPEED_ATTENUVERTER_PARAM].getValue() * inputs[SPEED_INPUT_INPUT].getVoltage();
-		float delay = params[DELAY_KNOB_PARAM].getValue() + inputs[DELAY_INPUT_INPUT].getVoltage();
-		float blend = params[BLEND_KNOB_PARAM].getValue() + inputs[BLEND_INPUT_INPUT].getVoltage();
+		summedSpeed = clamp(summedSpeed + params[SPEED_ATTENUVERTER_PARAM].getValue() * inputs[SPEED_INPUT_INPUT].getVoltage(), -5.f, 5.f);
+		float delay = clamp(params[DELAY_KNOB_PARAM].getValue() + inputs[DELAY_INPUT_INPUT].getVoltage(), 0.f, 5.f);
+		float blend = clamp(params[BLEND_KNOB_PARAM].getValue() + inputs[BLEND_INPUT_INPUT].getVoltage(), -5.f, 5.f);
 
 		// Toggle recording state based on button & gate
 		bool recJackTriggered = recTrigger.process(params[REC_INPUT_INPUT].getValue(), 0.1f, 1.f);
